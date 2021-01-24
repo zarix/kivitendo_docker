@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+
+  srv:
+    restart: "always"
+    image: kivitendo
+    build:
+      context: .
+    env_file:
+     - ./.env
+    environment:
+      ADMIN_PASSWORD: admin123
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_NAME: kivitendo_auth
+      DB_USER: kivitendo
+      DB_PASSWORD: kivitendo
+      DB_CREATE: kivitendo
+    ports:
+      - 8080:80
+    volumes:
+      - ./vorlage1:/var/www/kivitendo-erp/templates/vorlage1
+      - ./docker-entrypoint.sh:/docker-entrypoint.sh
+    depends_on:
+      - db
+
+  db:
+    restart: "always"
+    image: postgres
+    environment:
+      POSTGRES_PASSWORD: kivitendo
+      POSTGRES_USER: kivitendo
+      POSTGRES_DB: kivitendo_auth
+    ports:
+        - 5432:5432
+    volumes:
+      - ./db_data:/var/lib/postgresql/data
