@@ -4,13 +4,12 @@ services:
 
   srv:
     restart: "always"
-    image: kivitendo
+    image: zarix/kivitendo_docker
     build:
       context: .
     env_file:
      - ./.env
     environment:
-      ADMIN_PASSWORD: admin123
       DB_HOST: db
       DB_PORT: 5432
       DB_NAME: kivitendo_auth
@@ -20,8 +19,7 @@ services:
     ports:
       - 8080:80
     volumes:
-      - ./vorlage1:/var/www/kivitendo-erp/templates/vorlage1
-      - ./docker-entrypoint.sh:/docker-entrypoint.sh
+      - ./template1:/var/www/kivitendo-erp/templates/template1
     depends_on:
       - db
 
