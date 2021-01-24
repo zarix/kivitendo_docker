@@ -1,3 +1,4 @@
 .env
 /db_data/*
-/vorlage1/*
+/template1/*
+!/template1/empty
