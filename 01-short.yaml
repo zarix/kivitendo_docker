@@ -1,0 +1,230 @@
+---
+- id: custom1
+  name: Kivi
+  icon: add
+  order: 50
+- parent: custom1
+  id: custom1_angebot_offen
+  name: Offene Angebote
+  icon: quotation_add
+  order: 100
+  access: sales_quotation_edit
+  module: oe.pl
+  params:
+    action: orders
+    l_transdate: Y
+    l_reqdate: Y
+    l_quonumber: Y
+    l_name: Y
+    l_amount: Y
+    l_employee: Y
+    open: 1
+    type: sales_quotation
+    vc: customer
+    order_probability_op: ge
+    l_transaction_description: Y
+    sort: transdate
+    sortdir: 0
+
+- parent: custom1
+  id: custom1_auftrag_offen
+  name: Offene Vk-Auftraege
+  icon: sales_order_add
+  order: 102
+  access: sales_order_edit
+  module: oe.pl
+  params:
+    action: orders
+    l_transdate: Y
+    l_reqdate: Y
+    l_ordnumber: Y
+    l_edit_exp: Y
+    l_netamount: Y
+    l_name: Y
+    l_amount: Y
+    l_employee: Y
+    l_delivered: Y
+    l_transaction_description: Y
+    l_remaining_amount: Y
+    open: 1
+    delivered: 1
+    notdelivered: 1
+    type: sales_order
+    vc: customer
+    sort: transdate
+    sortdir: 1
+
+- parent: custom1
+  id: custom1_rechnung_offen
+  name: Offene Vk-Rechnungen
+  icon: sales_invoice_add
+  order: 103
+  access: invoice_edit
+  module: ar.pl
+  params:
+    action: ar_transactions
+    l_transdate: Y
+    l_invnumber: Y
+    l_name: Y
+    l_netamount: Y
+    l_amount: Y
+    l_paid: Y
+    l_transaction_description: Y
+    l_duedate: Y
+    open: Y
+    sort: transdate
+    sortdir: 1
+
+- parent: custom1
+  id: custom1_vkrechnung_suchen
+  name: Suche Vk-Rechnung
+  order: 106
+  access: sales_quotation_edit
+  module: ar.pl
+  params:
+    action: search
+    nextsub: ar_transactions
+
+- parent: custom1
+  id: custom1_ekauftrag_offen
+  name: Offene Ek-Auftreage
+  icon:  purchase_order_add
+  order: 107
+  access:  purchase_order_edit
+  module: oe.pl
+  params:
+    action: orders
+    l_transdate: Y
+    l_reqdate: Y
+    l_ordnumber: Y
+    l_edit_exp: Y
+    l_cusordnumber: Y
+    l_name: Y
+    l_netamount: Y
+    l_amount: Y
+    l_employee: Y
+    l_delivered: Y
+    l_remaining_amount: Y
+    open: 1
+    delivered: 1
+    notdelivered: 1
+    type: purchase_order
+    vc: vendor
+    sort: transdate
+    sortdir: 0
+
+- parent: custom1
+  id: custom1_ekrechnung_offen
+  name: Offene Ek-Rechungen
+  icon:  purchase_order_add
+  order: 108
+  access:  vendor_invoice_edit
+  module: ap.pl
+  params:
+    action: ap_transactions
+    l_transdate: Y
+    l_invnumber: Y
+    l_name: Y
+    l_netamount: Y
+    l_amount: Y
+    l_paid: Y
+    l_transaction_description: Y
+    open: Y
+    sort: transdate
+    sortdir: 0
+
+- parent: custom1
+  id: custom1_ekrechnung_suchen
+  name: Suche Ek-Rechnung
+  order: 109
+  access: sales_quotation_edit
+  module: ap.pl
+  params:
+    action: search
+
+
+- parent: custom1
+  id: custom1_kunden
+  name: Alle Kunden
+  icon: customer_add
+  order: 115
+  access: customer_vendor_edit
+  module: ct.pl
+  params:
+    action: list_names
+    db: customer
+    status: all
+    obsolete: N
+    l_name: Y
+    l_customernumber: Y
+    l_contact: Y
+    l_phone: Y
+    l_email: Y
+    l_street: Y
+    l_zipcode: Y
+    l_city: Y
+    l_country: Y
+    l_gln: Y
+    sort: name
+    sortdir: 1
+
+- parent: custom1
+  id: custom1_waren
+  name: Alle Waren
+  icon: vendor_add
+  order: 120
+  access: customer_vendor_edit
+  module: ic.pl
+  params:
+    action: generate_report
+    l_linetotal: Y
+    searchitems: article
+    itemstatus: active
+    l_pricegroups: Y
+    l_type_and_classific: Y
+    l_part: Y
+    l_partnumber: Y
+    l_type_and_classific: Y
+    l_description: Y
+    l_unit: Y
+    l_sellprice: Y
+    l_linetotalsellprice: Y
+    l_lastcost: Y
+    l_linetotallastcost: Y
+    sort: partnumber
+    revers: 0
+    lastsort: description
+
+- parent: custom1
+  id: custom1_dienst
+  name: Alle Dienste
+  icon: part_add
+  order: 125
+  access: part_service_assembly_edit
+  module: ic.pl
+  params:
+    action: generate_report
+    l_linetotal: Y
+    searchitems: article
+    itemstatus: active
+    l_pricegroups: Y
+    l_type_and_classific: Y
+    l_service: Y
+    l_partnumber: Y
+    l_type_and_classific: Y
+    l_description: Y
+    l_unit: Y
+    l_sellprice: Y
+    l_lastcost: Y
+    sort: partnumber
+    revers: 0
+    lastsort: description
+
+- parent: custom1
+  id: custom1_lager_bestand
+  name: Lagerbestand
+  order: 130
+  access: sales_quotation_edit
+  module: wh.pl
+  params:
+    action: report
