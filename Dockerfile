@@ -3,7 +3,7 @@ FROM ubuntu:20.10
 ENV DEBIAN_FRONTEND=noninteractive
 
 RUN apt-get update && \
-  apt install -y software-properties-common supervisor postgresql-client && \
+  apt install -y software-properties-common supervisor postgresql-client sudo && \
   add-apt-repository universe -y
 
 # Basic Pakets
@@ -57,6 +57,7 @@ ENV APACHE_LOCK_DIR /var/lock/apache2
 
 ADD docker-supervisord.conf /etc/supervisor/conf.d/
 ADD kivitendo.conf /var/www/kivitendo-erp/config/
+ADD 01-short.yaml /var/www/kivitendo-erp/menus/user/
 ADD apache.conf /etc/apache2/sites-enabled/kivitendo.conf
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 

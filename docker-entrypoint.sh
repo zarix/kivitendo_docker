@@ -32,4 +32,10 @@ sed -i "s/\$MAIL_SECURITY/$MAIL_SECURITY/g" $KIVI_CONFIG
 sed -i "s/\$MAIL_LOGIN/$MAIL_LOGIN/g" $KIVI_CONFIG
 sed -i "s/\$MAIL_PASSWORD/$MAIL_PASSWORD/g" $KIVI_CONFIG
 
+if [ $START_TASK_SERVER == "1" ]; then
+  sed -i "s/^autostart.*$/autostart\=true/" /etc/supervisor/conf.d/docker-supervisord.conf
+else
+  sed -i "s/^autostart.*$/autostart\=false/" /etc/supervisor/conf.d/docker-supervisord.conf
+fi
+
 $@

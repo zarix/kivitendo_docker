@@ -16,10 +16,13 @@ services:
       DB_USER: kivitendo
       DB_PASSWORD: kivitendo
       DB_CREATE: kivitendo
+      START_TASK_SERVER: 1
     ports:
       - 8080:80
     volumes:
       - ./template1:/var/www/kivitendo-erp/templates/template1
+#      - ./docker-entrypoint.sh:/docker-entrypoint.sh
+#      - ./docker-supervisord.conf:/etc/supervisor/conf.d/docker-supervisord.conf
     depends_on:
       - db
 
