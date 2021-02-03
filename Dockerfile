@@ -23,7 +23,7 @@ RUN apt-get update && apt install -y apache2 libarchive-zip-perl libclone-perl \
   libdaemon-generic-perl libfile-flock-perl libfile-slurp-perl\
   libfile-mimeinfo-perl libpbkdf2-tiny-perl libregexp-ipv6-perl \
   libdatetime-event-cron-perl libexception-class-perl libcam-pdf-perl \
-  libxml-libxml-perl build-essential
+  libxml-libxml-perl build-essential libpq-dev ruby-dev
 
 # Print
 RUN apt install -y texlive-base-bin texlive-latex-recommended texlive-fonts-recommended \
@@ -69,7 +69,8 @@ RUN a2enmod fcgid && a2enmod rewrite && \
   chmod -R +x * && \
   rm /etc/apache2/sites-*/*default* && \
   mkdir -p /var/run/apache2 && \
-  chmod -R +x /docker-entrypoint.sh
+  chmod -R +x /docker-entrypoint.sh && \
+	a2enmod cgi  && gem install pg
 
 WORKDIR /var/www
 EXPOSE 80
