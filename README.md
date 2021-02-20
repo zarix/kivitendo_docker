@@ -9,7 +9,7 @@
 ### Build
 
 ```
-git clone https://github.com/zarix/kivitendo_docker
+git clone https://github.com/zarix/kivitendo
 cp .env.template .env
 docker-compose build
 ```
