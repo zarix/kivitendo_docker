@@ -2,7 +2,7 @@
 
 ## Version
 
-* 3.5.6.1
+* 3.5.8
 
 ## Installation
 
