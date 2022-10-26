@@ -2,7 +2,7 @@
 
 ## Version
 
-* 3.5.8
+* 3.7.0
 
 ## Installation
 
@@ -16,7 +16,7 @@ docker-compose build
 
 ### Start
 ```
-docker-compose up -d
+docker compose up -d
 ```
 # Contribution
 
