@@ -6,23 +6,50 @@ default:
 
 stages:
   - build
+  - clear
 
 variables:
-  IMAGE_NAME: "kivitendo"
+  IMAGE_BASE: "$CI_REGISTRY/$CI_PROJECT_PATH"
+  IMAGE_COMMIT: "$IMAGE_BASE:$CI_COMMIT_SHORT_SHA"
 
 before_script:
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
+# Clean template
+.cleanup_job: &cleanup_job
+  script:
+    - docker rmi $IMAGE_BASE:latest || true
+    - docker rmi $(docker images | grep $IMAGE_BASE | awk '{print $3}') || true
+  only:
+    - master
+
+clear_first:
+  stage: build
+  <<: *cleanup_job
+
 build:
   stage: build
   script:
-    # BUILD IMAGE WITH COMMIT SHA
-    - docker build . -t $CI_REGISTRY/$CI_PROJECT_PATH/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-    # RETAG IMAGE LATEST WITH DIGEST FROM PREVIOUS IMAGE 
-    - IMAGE_ID=$(docker images | grep $CI_REGISTRY/$CI_PROJECT_PATH\/$IMAGE_NAME | awk '{print $3}')
-    - docker tag $IMAGE_ID $CI_REGISTRY/$CI_PROJECT_PATH/$IMAGE_NAME:latest
-    # PUSH IMAGE COMMIT SHA and LATEST
-    - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$IMAGE_NAME:$CI_COMMIT_SHORT_SHA
-    - docker push $CI_REGISTRY/$CI_PROJECT_PATH/$IMAGE_NAME:latest
+    - docker build . --pull -t $IMAGE_COMMIT
+    - IMAGE_ID=$(docker images | grep "$IMAGE_BASE" | awk '{print $3}')
+    - docker tag $IMAGE_ID $IMAGE_BASE:latest
+    - docker push $IMAGE_COMMIT
+    - docker push $IMAGE_BASE:latest
   only:
     - master
+  needs:
+    - job: clear_first
+
+#
+# Clean
+#
+
+clear_success:
+  stage: clear
+  when: on_success
+  <<: *cleanup_job
+
+clear_failure:
+  stage: clear
+  when: on_failure
+  <<: *cleanup_job
