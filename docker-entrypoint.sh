@@ -4,6 +4,26 @@ cd /var/www/kivitendo-erp
 chown -R www-data:www-data webdav spool
 chown www-data templates users
 
+# Defaults
+ADMIN_PASSWORD=${ADMIN_PASSWORD:-admin}
+DB_HOST=${DB_HOST:-db}
+DB_PORT=${DB_PORT:-5432}
+DB_NAME=${DB_NAME:-kivitendo_auth}
+DB_USER=${DB_USER:-kivitendo}
+DB_PASSWORD=${DB_PASSWORD:-kivitendo}
+AUTH_MODULE=${AUTH_MODULE:-DB}
+START_TASK_SERVER=${START_TASK_SERVER:-0}
+LDAP_HOST=${LDAP_HOST:-localhost}
+LDAP_PORT=${LDAP_PORT:-389}
+LDAP_TLS=${LDAP_TLS:-0}
+LDAP_ATTR=${LDAP_ATTR:-uid}
+LDAP_TIMEOUT=${LDAP_TIMEOUT:-10}
+LDAP_VERIFY=${LDAP_VERIFY:-require}
+MAIL_METHOD=${MAIL_METHOD:-smtp}
+MAIL_HOST=${MAIL_HOST:-localhost}
+MAIL_PORT=${MAIL_PORT:-25}
+MAIL_SECURITY=${MAIL_SECURITY:-none}
+
 KIVI_CONFIG="config/kivitendo.conf"
 
 sed -i "s/\$ADMIN_PASSWORD/$ADMIN_PASSWORD/g" $KIVI_CONFIG

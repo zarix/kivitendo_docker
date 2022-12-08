@@ -5,34 +5,22 @@ services:
   srv:
     restart: "always"
     image: zarix/kivitendo_docker
-    build:
-      context: .
-    env_file:
-     - ./.env
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: kivitendo_auth
-      DB_USER: kivitendo
-      DB_PASSWORD: kivitendo
-      START_TASK_SERVER: 0
     ports:
       - 8080:80
     volumes:
       - ./template1:/var/www/kivitendo-erp/templates/template1
-#      - ./docker-entrypoint.sh:/docker-entrypoint.sh
-#      - ./docker-supervisord.conf:/etc/supervisor/conf.d/docker-supervisord.conf
     depends_on:
       - db
 
   db:
     restart: "always"
-    image: postgres
+    image: postgres:14
     environment:
       POSTGRES_PASSWORD: kivitendo
       POSTGRES_USER: kivitendo
       POSTGRES_DB: kivitendo_auth
-    ports:
-        - 5432:5432
     volumes:
-      - ./db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:
