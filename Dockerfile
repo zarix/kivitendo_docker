@@ -64,6 +64,7 @@ ADD docker-supervisord.conf /etc/supervisor/conf.d/
 ADD kivitendo.conf /var/www/kivitendo-erp/config/
 ADD 01-short.yaml /var/www/kivitendo-erp/menus/user/
 ADD apache.conf /etc/apache2/sites-enabled/kivitendo.conf
+ADD fcgid_extra.conf /etc/apache2/mods-enabled/fcgid_extra.conf
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 # Apache & Permissions
