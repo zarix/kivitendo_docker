@@ -38,11 +38,11 @@ docker compose up -d
 | Name | Default | Purpose |
 |----------|----------|-------|
 | `ADMIN_PASSWORD` | admin | |
-| `DB_HOST` | db | |
-| `DB_PORT` | 5432 | |
-| `DB_NAME` | kivitendo_auth | |
-| `DB_USER` | kivitendo | |
-| `DB_PASSWORD` | kivitendo | |
+| `POSTGRES_HOST` | db | |
+| `POSTGRES_PORT` | 5432 | |
+| `POSTGRES_NAME` | kivitendo_auth | |
+| `POSTGRES_USER` | kivitendo | |
+| `POSTGRES_PASSWORD` | kivitendo | |
 | `START_TASK_SERVER` | 0 | |
 | `AUTH_MODULE` | DB | |
 | `LDAP_HOST` | localhost | |
