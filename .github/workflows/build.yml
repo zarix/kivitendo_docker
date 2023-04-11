@@ -31,7 +31,7 @@ jobs:
         with:
           context: .
           push: ${{ github.event_name != 'pull_request' }}
-          tags: ${{ steps.meta.outputs.tags }}
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/kivitendo:latest
           labels: ${{ steps.meta.outputs.labels }}
 
       - name: Image digest
