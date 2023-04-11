@@ -1,7 +1,7 @@
 ---
 - id: custom1
   name: Kivi
-  icon: add
+  icon: version
   order: 50
 - parent: custom1
   id: custom1_angebot_offen
@@ -181,7 +181,6 @@
     searchitems: article
     itemstatus: active
     l_pricegroups: Y
-    l_type_and_classific: Y
     l_part: Y
     l_partnumber: Y
     l_type_and_classific: Y
@@ -208,7 +207,6 @@
     searchitems: article
     itemstatus: active
     l_pricegroups: Y
-    l_type_and_classific: Y
     l_service: Y
     l_partnumber: Y
     l_type_and_classific: Y
