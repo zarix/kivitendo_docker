@@ -1,10 +1,10 @@
-FROM ubuntu:22.04
+FROM ubuntu:23.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-RUN apt-get update && \
-  apt install -y software-properties-common supervisor postgresql-client sudo && \
-  add-apt-repository universe -y
+RUN apt-get update \
+ && apt install -y software-properties-common supervisor postgresql-client sudo wget \
+ && add-apt-repository universe -y
 
 # Basic Pakets
 RUN apt-get update && apt install -y \ 
@@ -26,32 +26,47 @@ RUN apt-get update && apt install -y \
     libdatetime-event-cron-perl libexception-class-perl libcam-pdf-perl \
     libxml-libxml-perl libtry-tiny-perl libmath-round-perl \
     libimager-perl libimager-qrcode-perl librest-client-perl libipc-run-perl \
-    build-essential libpq-dev ruby-dev libreadline-dev
+    build-essential libpq-dev ruby-dev libreadline-dev ghostscript
 
 # Print
+# https://www.tug.org/texlive/quickinstall.html
+# ADD texlive.profile /tmp/
+# RUN apt-get install -y tex-common texinfo equivs perl-tk perl-doc \
+#  && cd /tmp \
+#  && wget https://mirror.ctan.org/systems/texlive/tlnet/install-tl-unx.tar.gz \
+#  && zcat < install-tl-unx.tar.gz | tar xf - \
+#  && cd install-tl-2* \
+#  && perl ./install-tl --profile /tmp/texlive.profile
+# ENV PATH="/usr/local/texlive/2023/bin/x86_64-linux:${PATH}"
 RUN apt install -y \
-    texlive-base-bin texlive-latex-recommended texlive-fonts-recommended \
-    texlive-latex-extra texlive-lang-german ghostscript
+    texlive-base-bin texlive-latex-recommended texlive-latex-base \
+    texlive-fonts-recommended texlive-latex-extra texlive-lang-german \
+    ghostscript
 
 # Perl
 RUN cpan Algorithm::CheckDigits Archive::Zip CAM::PDF CGI Clone Config::Std \
-      Daemon::Generic DateTime DateTime::Event::Cron DateTime::Format::Strptime \
-      DateTime::Set DBI DBD::Pg Email::Address Email::MIME Exception::Class FCGI \
-      File::Copy::Recursive File::Flock File::MimeInfo File::Slurp GD HTML::Parser \
-      HTML::Restrict Image::Info JSON List::MoreUtils List::UtilsBy \
-      LWP::Authen::Digest LWP::UserAgent Net::SMTP::SSL Net::SSLGlue \
-      Params::Validate PBKDF2::Tiny PDF::API2 Regexp::IPv6 Rose::Object \
-      Rose::DB Rose::DB::Object Set::Infinite String::ShellQuote Sort::Naturally \
-      Template Text::CSV_XS Text::Iconv Text::Unidecode URI YAML::XS Math::Round \
-      IPC::Run Imager Imager::QRCode Rest::Client Term::ReadLine::Gnu || :
+    Daemon::Generic DateTime DateTime::Event::Cron DateTime::Format::Strptime \
+    DateTime::Set DBI DBD::Pg Email::Address Email::MIME Exception::Class FCGI \
+    File::Copy::Recursive File::Flock File::MimeInfo File::Slurp GD HTML::Parser \
+    HTML::Restrict Image::Info JSON List::MoreUtils List::UtilsBy \
+    LWP::Authen::Digest LWP::UserAgent Net::SMTP::SSL Net::SSLGlue \
+    Params::Validate PBKDF2::Tiny PDF::API2 Regexp::IPv6 Rose::Object \
+    Rose::DB Rose::DB::Object Set::Infinite String::ShellQuote Sort::Naturally \
+    Template Text::CSV_XS Text::Iconv Text::Unidecode URI YAML::XS Math::Round \
+    IPC::Run Imager Imager::QRCode Rest::Client Term::ReadLine::Gnu || :
 
 # Kivitendo
 RUN cd /var/www \
  && git clone https://github.com/kivitendo/kivitendo-erp.git \
  && cd /var/www/kivitendo-erp \
- && git checkout release-3.7.0 \
+ && git checkout release-3.8.0 \
+ # https://forum.kivitendo.ch/5784/nach-update-auf-latex-2021-file-scrpage2-sty-not-found
+ && sed -i 's/scrpage2/scrlayer-scrpage/g' /var/www/kivitendo-erp/templates/print/RB/inheaders.tex \
+ && sed -i "s/^latex =.*/latex = pdflatex/g" /var/www/kivitendo-erp/config/kivitendo.conf.default \
  && perl scripts/installation_check.pl -l \
- && mkdir webdav
+ && mkdir webdav \
+ && rm -r /var/www/kivitendo-erp/.git \
+ && rm -r /var/www/kivitendo-erp/.git*
 
 ENV APACHE_RUN_DIR=/var/run/apache2
 ENV APACHE_RUN_USER www-data
@@ -63,8 +78,8 @@ ENV APACHE_LOCK_DIR /var/lock/apache2
 ADD docker-supervisord.conf /etc/supervisor/conf.d/
 ADD kivitendo.conf /var/www/kivitendo-erp/config/
 ADD 01-short.yaml /var/www/kivitendo-erp/menus/user/
-ADD apache.conf /etc/apache2/sites-enabled/kivitendo.conf
-ADD fcgid_extra.conf /etc/apache2/mods-enabled/fcgid_extra.conf
+ADD apache/apache.conf /etc/apache2/sites-enabled/kivitendo.conf
+ADD apache/fcgid_extra.conf /etc/apache2/mods-enabled/fcgid_extra.conf
 ADD docker-entrypoint.sh /docker-entrypoint.sh
 
 # Apache & Permissions
