@@ -1,4 +1,4 @@
-FROM ubuntu:23.04
+FROM ubuntu:24.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
@@ -7,7 +7,7 @@ RUN apt-get update \
  && add-apt-repository universe -y
 
 # Basic Pakets
-RUN apt-get update && apt install -y \ 
+RUN apt-get update && apt install -y wget tar \ 
     apache2 libarchive-zip-perl libclone-perl \
     libconfig-std-perl libdatetime-perl libdbd-pg-perl libdbi-perl \
     libemail-address-perl  libemail-mime-perl libfcgi-perl libjson-perl \
@@ -18,7 +18,7 @@ RUN apt-get update && apt install -y \
     libtext-iconv-perl liburi-perl libxml-writer-perl libyaml-perl \
     libimage-info-perl libgd-gd2-perl libapache2-mod-fcgid \
     libfile-copy-recursive-perl postgresql libalgorithm-checkdigits-perl \
-    libcrypt-pbkdf2-perl git libcgi-pm-perl libtext-unidecode-perl libwww-perl \
+    libcrypt-pbkdf2-perl libcgi-pm-perl libtext-unidecode-perl libwww-perl \
     postgresql-contrib poppler-utils libhtml-restrict-perl \
     libdatetime-set-perl libset-infinite-perl liblist-utilsby-perl \
     libdaemon-generic-perl libfile-flock-perl libfile-slurp-perl \
@@ -41,7 +41,7 @@ RUN apt-get update && apt install -y \
 RUN apt install -y \
     texlive-base-bin texlive-latex-recommended texlive-latex-base \
     texlive-fonts-recommended texlive-latex-extra texlive-lang-german \
-    ghostscript
+    ghostscript texlive-lang-greek
 
 # Perl
 RUN cpan Algorithm::CheckDigits Archive::Zip CAM::PDF CGI Clone Config::Std \
@@ -53,20 +53,22 @@ RUN cpan Algorithm::CheckDigits Archive::Zip CAM::PDF CGI Clone Config::Std \
     Params::Validate PBKDF2::Tiny PDF::API2 Regexp::IPv6 Rose::Object \
     Rose::DB Rose::DB::Object Set::Infinite String::ShellQuote Sort::Naturally \
     Template Text::CSV_XS Text::Iconv Text::Unidecode URI YAML::XS Math::Round \
-    IPC::Run Imager Imager::QRCode Rest::Client Term::ReadLine::Gnu || :
+    IPC::Run Imager Imager::QRCode Term::ReadLine::Gnu Mail::IMAPClient Encode::IMAPUTF7 || :
 
 # Kivitendo
 RUN cd /var/www \
- && git clone https://github.com/kivitendo/kivitendo-erp.git \
+ && wget https://github.com/kivitendo/kivitendo-erp/archive/refs/tags/release-3.9.0.tar.gz \
+ && tar -xvzf release-3.9.0.tar.gz \
+ && mv kivitendo-erp-release-3.9.0 kivitendo-erp \
+ && rm release-3.9.0.tar.gz \
  && cd /var/www/kivitendo-erp \
- && git checkout release-3.8.0 \
  # https://forum.kivitendo.ch/5784/nach-update-auf-latex-2021-file-scrpage2-sty-not-found
  && sed -i 's/scrpage2/scrlayer-scrpage/g' /var/www/kivitendo-erp/templates/print/RB/inheaders.tex \
  && sed -i "s/^latex =.*/latex = pdflatex/g" /var/www/kivitendo-erp/config/kivitendo.conf.default \
+ # Bug https://github.com/kivitendo/kivitendo-erp/commit/7c2a73ebdff2c22bb5e789d9d70efb7d0423c099
+ && sed -i "s/ uniq / List::MoreUtils::uniq /g" /var/www/kivitendo-erp/scripts/installation_check.pl \
  && perl scripts/installation_check.pl -l \
- && mkdir webdav \
- && rm -r /var/www/kivitendo-erp/.git \
- && rm -r /var/www/kivitendo-erp/.git*
+ && mkdir webdav
 
 ENV APACHE_RUN_DIR=/var/run/apache2
 ENV APACHE_RUN_USER www-data
