@@ -6,6 +6,7 @@ default:
 
 stages:
   - build
+  - deploy
   - clear
 
 variables:
@@ -13,13 +14,14 @@ variables:
   IMAGE_COMMIT: "$IMAGE_BASE:$CI_COMMIT_SHORT_SHA"
 
 before_script:
+  - export VERSION_NR=$(cat ./VERSION)
+  - export VERSION_COMMIT="${VERSION_NR}-${CI_COMMIT_SHORT_SHA}"
   - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
 
-# Clean template
+# Template
 .cleanup_job: &cleanup_job
   script:
-    - docker rmi $IMAGE_BASE:latest || true
-    - docker rmi $(docker images | grep $IMAGE_BASE | awk '{print $3}') || true
+    - docker rmi -f $(docker images | grep $IMAGE_BASE | awk '{print $3}') || true
   only:
     - master
 
@@ -31,14 +33,25 @@ build:
   stage: build
   script:
     - docker build . --pull -t $IMAGE_COMMIT
-    - IMAGE_ID=$(docker images | grep "$IMAGE_BASE" | awk '{print $3}')
-    - docker tag $IMAGE_ID $IMAGE_BASE:latest
-    - docker push $IMAGE_COMMIT
-    - docker push $IMAGE_BASE:latest
   only:
     - master
   needs:
     - job: clear_first
+
+deploy:
+  stage: deploy
+  script:
+    - IMAGE_ID=$(docker images | grep "$CI_COMMIT_SHORT_SHA" | awk '{print $3}')
+    # Tag
+    - docker tag $IMAGE_ID "$IMAGE_BASE:$VERSION_NR"
+    - docker tag $IMAGE_ID "$IMAGE_BASE:$VERSION_COMMIT"
+    - docker tag $IMAGE_ID "$IMAGE_BASE:latest"
+    # Push
+    - docker push "$IMAGE_BASE:$VERSION_COMMIT"
+    - docker push "$IMAGE_BASE:$VERSION_NR"
+    - docker push $IMAGE_BASE:latest
+  only:
+    - master
 
 #
 # Clean
