@@ -11,6 +11,7 @@ POSTGRES_PORT=${POSTGRES_PORT:-5432}
 POSTGRES_NAME=${POSTGRES_NAME:-kivitendo_auth}
 POSTGRES_USER=${POSTGRES_USER:-kivitendo}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-kivitendo}
+POSTGRES_KIVI_DB=${POSTGRES_KIVI_DB:-kivitendo}
 AUTH_MODULE=${AUTH_MODULE:-DB}
 START_TASK_SERVER=${START_TASK_SERVER:-0}
 LDAP_HOST=${LDAP_HOST:-localhost}
@@ -23,6 +24,9 @@ MAIL_METHOD=${MAIL_METHOD:-smtp}
 MAIL_HOST=${MAIL_HOST:-localhost}
 MAIL_PORT=${MAIL_PORT:-25}
 MAIL_SECURITY=${MAIL_SECURITY:-none}
+SECRET_KEY_BASE=${SECRET_KEY_BASE:-none}
+API_USER=${API_USER:-kivitendo}
+API_PASSWORD=${API_PASSWORD:-kivitendo}
 
 KIVI_CONFIG="config/kivitendo.conf"
 
@@ -59,5 +63,17 @@ if [ $START_TASK_SERVER == "1" ]; then
 else
   sed -i "s/^autostart.*$/autostart\=false/" /etc/supervisor/conf.d/docker-supervisord.conf
 fi
+
+cd /var/www/kivitendo-api
+SEC_CONFIG="config/secrets.yml"
+sed -i "s/\$SECRET_KEY_BASE/$SECRET_KEY_BASE/g" $SEC_CONFIG
+API_CONFIG="config/database.yml"
+sed -i "s/\$POSTGRES_HOST/$POSTGRES_HOST/g" $API_CONFIG
+sed -i "s/\$POSTGRES_KIVI_DB/$POSTGRES_KIVI_DB/g" $API_CONFIG
+sed -i "s/\$POSTGRES_USER/$POSTGRES_USER/g" $API_CONFIG
+sed -i "s/\$POSTGRES_PASSWORD/$POSTGRES_PASSWORD/g" $API_CONFIG
+AUTH_CONFIG="app/controllers/api/v1/api_controller.rb"
+sed -i "s/Rails.application.secrets\[\:http_user\]/\"$API_USER\"/g" $AUTH_CONFIG
+sed -i "s/Rails.application.secrets\[\:http_pwd\]/\"$API_PASSWORD\"/g" $AUTH_CONFIG
 
 $@

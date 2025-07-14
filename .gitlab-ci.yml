@@ -1,7 +1,7 @@
 default:
   image: docker:20.10.16-dind
   tags:
-    - intern
+    - build
     - docker
 
 stages:

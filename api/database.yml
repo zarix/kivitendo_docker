@@ -1,0 +1,19 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+
+development:
+  <<: *default
+  database: kivitendo_rest_api_development
+
+test:
+  <<: *default
+  database: kivitendo_rest_api_test
+
+production:
+  <<: *default
+  host: $POSTGRES_HOST
+  database: $POSTGRES_KIVI_DB
+  username: $POSTGRES_USER
+  password: $POSTGRES_PASSWORD
