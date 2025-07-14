@@ -10,7 +10,7 @@
 
 Database:
 
-```
+```bash
 docker run --name db \
     -e POSTGRES_PASSWORD=kivitendo \
     -e POSTGRES_USER=kivitendo \
@@ -20,7 +20,7 @@ docker run --name db \
 
 Kivitendo:
 
-```
+```bash
 docker run --name kivitendo \
     --link db:db \
     -p '80:80' \
@@ -29,7 +29,7 @@ docker run --name kivitendo \
 
 ## via Compose
 
-```
+```bash
 wget https://raw.githubusercontent.com/zarix/kivitendo_docker/master/docker-compose.yml
 docker compose up -d
 ```
@@ -66,16 +66,26 @@ docker compose up -d
 | `MAIL_PASSWORD`     |                |         |
 | `MAIL_FROM`         |                |         |
 | `MAIL_TO`           |                |         |
+| `API_USER`          | kivitendo      |         |
+| `SECRET_KEY_BASE`   |                |         |
+| `API_PASSWORD`      | kivitendo      |         |
 
 ### Start
 
-```
+```bash
 docker compose up -d
 ```
 
 Point your browser to http://localhost:8080 and login using the default username and password:
 
 - password: **admin**
+
+### Api
+
+```bash
+curl -v -u "kivitendo:kivitendo" http://localhost:8080/api/v1/products.json
+```
+
 
 # Contribution
 
